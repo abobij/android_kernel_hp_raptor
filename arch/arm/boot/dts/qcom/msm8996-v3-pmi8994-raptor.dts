@@ -1,0 +1,132 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/dts-v1/;
+
+#include "msm8996-v3.dtsi"
+#include "msm8996-mtp.dtsi"
+#include "dsi-panel-td4322-1080p-cmd.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. MSM 8996 v3 + PMI8994 RAPTOR";
+	compatible = "qcom,msm8996-raptor", "qcom,msm8996-mtp",
+		     "qcom,msm8996", "qcom,mtp";
+	qcom,board-id = <0x1f 0>, <0x1f 1>, <0x1f 2>, <0x1f 3>;
+
+	reserved-memory {
+		pstore_reserve_mem_region@9ff00000 {
+			reg = <0 0x9ff00000 0 0x100000>;
+			linux,reserve-contiguous-region;
+			linux,reserve-region;
+			linux,remove-completely;
+			label = "pstore_reserve_mem";
+		};
+	};
+
+	tzapp_region@0 {
+		reg = <0 0x88800000 0 0x2200000>;
+		linux,reserve-contiguous-region;
+		linux,reserve-region;
+		linux,remove-completely;
+		label = "tzapp_mem";
+	};
+};
+
+&mdss_dsi {
+	hw-config = "single_dsi";
+};
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&dsi_td4322_1080p_cmd>;
+	qcom,platform-reset-gpio = <&tlmm 89 0>;
+};
+
+&ibb_regulator {
+	qcom,qpnp-ibb-init-lcd-voltage = <6000000>;
+};
+
+&lab_regulator {
+	qcom,qpnp-lab-init-lcd-voltage = <6000000>;
+};
+
+&pmi8994_wled {
+	qcom,led-strings-list = [00 01];
+};
+
+&pm8994_l17 {
+	regulator-max-microvolt = <2700000>;
+};
+
+&pm8994_l22 {
+	regulator-min-microvolt = <1800000>;
+	regulator-max-microvolt = <1800000>;
+	qcom,init-voltage = <1800000>;
+};
+
+&sdhc_2 {
+	cd-gpios = <&tlmm 95 0>;
+};
+
+&sdc2_cd_on {
+	config {
+		/delete-property/ bias-pull-up;
+		bias-disable;
+	};
+};
+
+&sdc2_cd_off {
+	config {
+		/delete-property/ bias-pull-up;
+		bias-disable;
+	};
+};
+
+/* RAPTOR camera power and GPIO wiring still need to be ported. */
+&cci {
+	status = "disabled";
+};
+
+&tspp {
+	status = "disabled";
+};
+
+&soc {
+	i2c@757a000 {
+		status = "disabled";
+	};
+
+	i2c@75b5000 {
+		/delete-node/ silabs4705@11;
+	};
+
+	i2c@75b6000 {
+		nq@28 {
+			status = "disabled";
+		};
+	};
+
+	i2c@75ba000 {
+		/delete-node/ synaptics@20;
+
+		synaptics@70 {
+			compatible = "synaptics,dsx-i2c";
+			reg = <0x70>;
+			interrupt-parent = <&tlmm>;
+			interrupts = <125 0x2008>;
+			vdd-supply = <&pm8994_l14>;
+			avdd-supply = <&pm8994_l22>;
+			pinctrl-names = "pmx_ts_active", "pmx_ts_suspend";
+			pinctrl-0 = <&ts_active>;
+			pinctrl-1 = <&ts_suspend>;
+			synaptics,display-coords = <0 0 1079 1919>;
+			synaptics,panel-coords = <0 0 1079 1919>;
+			synaptics,irq-gpio = <&tlmm 125 0x2008>;
+			synaptics,disable-gpios;
+			clock-names = "iface_clk", "core_clk";
+			clocks = <&clock_gcc clk_gcc_blsp2_ahb_clk>,
+				 <&clock_gcc clk_gcc_blsp2_qup6_i2c_apps_clk>;
+		};
+	};
+
+	spi@7575000 {
+		status = "disabled";
+	};
+};
