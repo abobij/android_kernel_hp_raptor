@@ -66,6 +66,7 @@ enum {
 	HW_PLATFORM_STP = 23,
 	HW_PLATFORM_SBC = 24,
 	HW_PLATFORM_ADP = 25,
+	HW_PLATFORM_RAPTOR = 31,
 	HW_PLATFORM_INVALID
 };
 
@@ -87,6 +88,7 @@ const char *hw_platform[] = {
 	[HW_PLATFORM_STP] = "STP",
 	[HW_PLATFORM_SBC] = "SBC",
 	[HW_PLATFORM_ADP] = "ADP",
+	[HW_PLATFORM_RAPTOR] = "RAPTOR",
 };
 
 enum {
@@ -811,6 +813,8 @@ msm_get_hw_platform(struct device *dev,
 {
 	uint32_t hw_type;
 	hw_type = socinfo_get_platform_type();
+	if (hw_type >= ARRAY_SIZE(hw_platform) || !hw_platform[hw_type])
+		hw_type = HW_PLATFORM_UNKNOWN;
 
 	return snprintf(buf, PAGE_SIZE, "%-.32s\n",
 			hw_platform[hw_type]);
