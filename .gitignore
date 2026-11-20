@@ -96,3 +96,17 @@ x509.genkey
 
 # Kconfig presets
 all.config
+
+# Local HP RAPTOR documentation, dumps, and build artifacts
+/AGENTS.md
+/Obsidian/
+/builds/
+/device-tree-base/
+/out/
+/tmp/
+/*.img
+/cmdline.txt
+/dmesg.txt
+/getprop.txt
+/partitions.txt
+/version.txt
